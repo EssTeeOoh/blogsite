@@ -1,0 +1,124 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Start your development with JoeBLog landing page.">
+    <meta name="author" content="Devcrud">
+    <title>Regidter<div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Description</div>
+    </div></title>
+    <!-- font icons -->
+    <link rel="stylesheet" href="{% static 'blogapp/vendors/themify-icons/css/themify-icons.css' %}">
+    <!-- Bootstrap + JoeBLog main styles -->
+	<link rel="stylesheet" href="{% static 'blogapp/css/joeblog.css' %}">
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+    
+    <!-- Page Second Navigation -->
+    <nav class="navbar custom-navbar navbar-expand-md navbar-light bg-primary sticky-top">
+        <div class="container">
+            <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">                     
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    </li>
+                    
+                    {% if cat_menu %}
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Categories
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                            {% for item in cat_menu %}
+                            <a class="dropdown-item" href="{% url 'category' item %}">{{item}}</a>
+                            {% endfor %}
+
+                            
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout </a>
+                    </li>
+
+                    {% else %}
+
+                    
+                    {% endif %}
+
+                </ul>
+                <div class="navbar-nav ml-auto">
+                  <li class="nav-item">
+                      <a class="nav-link" href="#">
+                          <button id="themeToggle" class="btn btn-dark mt-1 btn-sm">Dark Mode</button>
+                      </a>
+                  </li>
+              </div>
+              
+            </div>
+        </div>
+    </nav>
+        <h1> Register</h1>
+        <br/><br/>
+        <div class = "container">
+            <div class="form-group">
+                <form method ="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="btn btn-secondary">Register</button>
+            </div>
+        </div>
+
+
+      <!-- core  -->
+      <script src="{% static 'blogapp/vendors/jquery/jquery-3.4.1.js' %}"></script>
+      <script src="{% static 'blogapp/vendors/bootstrap/bootstrap.bundle.js' %}"></script>
+
+      <!-- JoeBLog js -->
+      <script src="{% static 'blogapp/js/joeblog.js' %}"></script>
+    
+      <script>
+          const themeToggle = document.getElementById('themeToggle');
+      
+          // Function to set the button text
+          function setButtonLabel() {
+              if (document.body.classList.contains('dark-mode')) {
+                  themeToggle.textContent = 'Light Mode';
+              } else {
+                  themeToggle.textContent = 'Dark Mode';
+              }
+          }
+      
+          // Function to toggle the theme and button label
+          function toggleTheme() {
+              document.body.classList.toggle('dark-mode');
+              setButtonLabel();
+              localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark-mode' : null);
+          }
+      
+          // Check and apply saved theme on page load
+          const currentTheme = localStorage.getItem('theme');
+          if (currentTheme) {
+              document.body.classList.add(currentTheme);
+          }
+      
+          // Set initial button label based on the theme
+          setButtonLabel();
+      
+          // Event listener for the toggle button
+          themeToggle.addEventListener('click', toggleTheme);
+      </script>
+
+</body>
+</html>

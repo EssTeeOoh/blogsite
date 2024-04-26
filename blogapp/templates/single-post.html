@@ -1,0 +1,471 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Start your development with JoeBLog landing page.">
+    <meta name="author" content="Devcrud">
+    <title>{{post.title_tag}}</title>
+    <!-- font icons -->
+    <link rel="stylesheet" href="{% static 'blogapp/vendors/themify-icons/css/themify-icons.css' %}">
+    <!-- Bootstrap + JoeBLog main styles -->
+	<link rel="stylesheet" href="{% static 'blogapp/css/joeblog.css' %}">
+
+    
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+    
+    <!-- Page Second Navigation -->
+    <nav class="navbar custom-navbar navbar-expand-md navbar-light bg-primary sticky-top">
+        <div class="container">
+            <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">                     
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Home</a>
+                    </li>
+                    
+                    {% if cat_menu %}
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Categories
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                            {% for item in cat_menu %}
+                            <a class="dropdown-item" href="{% url 'category' item %}">{{item}}</a>
+                            {% endfor %}
+
+                            
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout </a>
+                    </li>
+
+                    {% else %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login </a>
+                    </li>
+                    {% endif %}
+
+                </ul>
+                <div class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <button id="themeToggle" class="btn btn-dark mt-1 btn-sm">Dark Mode</button>
+                        </a>
+                    </li>
+                </div>
+                
+            </div>
+        </div>
+    </nav>
+    <!-- End Of Page Second Navigation -->
+
+    <!-- Page Header -->
+    <header class="page-header page-header-mini">
+        <h1 class="title">Olu's Blog</h1>
+        <ol class="breadcrumb pb-0">
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Voluptates Corporis Placeat</li>
+        </ol>
+    </header>
+    <!-- End Of Page Header -->
+
+    <section class="container">
+        <div class="page-container">
+            <div class="page-content">
+                <div class="card">
+                    <div class="card-header pt-0">
+                        <h3 class="card-title mb-4">{{ post.title }}</h3>
+                        
+                        <div class="blog-media mb-4">
+                            {% if post.header_image %}
+                            <img src="{{post.header_image.url}}" alt="" class="w-100">
+                            {% endif %}
+                            <a href="{% url 'category' post.category %}" class="badge badge-primary">{{ post.category }}</a> 
+                        </div>  
+                        <small class="small text-muted">
+                            <a href="#" class="text-muted">By {{post.author}}</a>
+                            <span class="px-2">·</span>
+                            <span>{{post.post_date}}</span> |
+                            <span>{{post.post_time}}</span>
+                            <span class="px-2">·</span>
+                            <a href="#" class="text-muted">32 Comments</a>
+
+                            {% if user.is_authenticated %}
+                                {% if user.id ==  post.author.id %}
+                                    <a href="{% url 'update_post' post.pk %}" class="badge badge-pill badge-primary"><b> Edit Post</b></a>
+                                    <a href="{% url 'delete_post' post.pk %}" class="badge badge-pill badge-primary"><b> Delete Post</b></a>
+                                {% elif user.id == 1%}  
+                                    <a href="{% url 'update_post' post.pk %}" class="badge badge-pill badge-primary"><b> Edit Post</b></a>
+                                    <a href="{% url 'delete_post' post.pk %}" class="badge badge-pill badge-primary"><b> Delete Post</b></a>  
+                                {% endif %}
+                            {% endif %}
+                        </small>
+                    </div>
+                    <div class="card-body border-top">
+                        <p class="my-3"> {{ post.body|safe }}</p> 
+                    </div>
+                    <form id= "like-form" action="{% url 'like_post' post.pk %}"
+                        method="POST">
+                            {% csrf_token %}
+
+                        {% if user.is_authenticated %}
+                            {% if liked %}
+                            <button id="like-button" type="submit", name="post_id", value="{{ post.id }}", class="btn btn-primary circle"><i class="ti-heart"></i></button> 
+                            {% else %}
+                            <button id="like-button" type="submit", name="post_id", value="{{ post.id }}", class="btn btn-outline-primary circle"><i class="ti-heart"></i></button>
+                            {% endif %}
+                        {% else %}
+                        <small><a href="{% url 'login' %}" class="badge badge-pill badge-primary">Login</a> to like </small>
+                        {% endif %}
+                            - {{ post.total_likes }} likes
+                    </form>     
+            
+<br/><br/>
+
+<div class="card mb-3" style="max-width: 540px;">
+    <div class="row no-gutters">
+      <div class="media">
+        {% if post.author.profile.profile_pic.url %}
+            <img src= "{{ post.author.profile.profile_pic.url }}" width=50 height=50 class="mr-3 thumb-sm rounded-circle" alt="...">
+        {% else %}
+            <img src= "{% static 'blogapp/imgs/default.jpg'%}" width=50 height=50 class="mr-3 thumb-sm rounded-circle" alt="...">
+        {% endif %}
+      </div>
+      <div class="col-md-10">
+        <div class="media-body">
+            {% if post.author.profile.id %}
+                <h5 class="card-title"> <a href=" {% url 'show_profile_page' post.author.profile.id %}" class="badge badge-pill badge-dark"> {{post.author}} </a> </h5>
+            {% endif %}
+        <p class= "socials"> 
+            {% if post.author.profile.website_url %}
+                <a href="{{ post.author.profile.website_url }}" ><i class="ti-world " ></i> </a>
+            {% endif %}
+
+            {% if post.author.profile.facebook_url %}
+                <a href="{{ post.author.profile.facebook_url }}" ><i class="ti-facebook" ></i>  </a>
+            {% endif %}
+
+            {% if post.author.profile.twitter_url %}
+                <a href="{{ post.author.profile.twitter_url }}" ><i class="ti-twitter" ></i>  </a>
+            {% endif %}
+
+            {% if post.author.profile.instagram_url %}
+                <a href="{{ post.author.profile.instagram_url }}"><i class="ti-instagram" ></i>  </a>
+            {% endif %}
+
+            {% if post.author.profile.linkedin_url %}
+                <a href="{{ post.author.profile.linkedin_url }}"><i class="ti-linkedin" ></i>  </a>
+            {% endif %}
+        </p>
+
+          <p class="card-text"> {{ post.author.profile.bio}} </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+                           
+
+                <div class="card-footer">      
+                    <h6 >
+                        <a
+                        > {{ post.comments.all.count }} Comments</a>
+                    </h6>
+                    <hr>
+                    {% if not post.comments.all %}
+                        No Comment Yet
+                    
+                    {% else %}
+
+                      
+                        {% for comment in post.comments.all %}
+                            <div class="comment {% if forloop.counter > 3 %}hidden{% endif %}">
+                                <div class="media">
+                                    <img src="{% static 'blogapp/imgs/avatar-1.jpg' %}" class="mr-3 thumb-sm rounded-circle" alt="...">
+                                    <div class="media-body">
+                                        {% if comment.user %}
+                                        <h6 class="mt-0">{{ comment.user.user.username }}</h6>
+                                        {% else %}
+                                        <h6 class="mt-0">{{ comment.name }}</h6>
+                                        {% endif %}
+                                        <p>{{ comment.body }}</p> 
+                                        <p>{{ comment.date_added }}</p>        
+                                    </div>
+                                </div>
+                            </div>
+                        
+                    
+                        
+                        {% endfor %}
+                    {% endif %}
+                    {% if post.comments.all.count > 3 %}
+                        <a href="#" id="loadMoreComments" class="text-info">Show More Comments</a>
+                    {% endif %}
+                    <h6 ><a href="{% url 'add_comment' post.pk %}" class="badge badge-pill badge-primary"> Add comment </a></h6>
+                    <style>
+                        .hidden { display: none; }
+                    </style>
+                <div class="form-group col-12">
+                    
+                </div>        
+                 
+                <h6 class="mt-5 text-center">Related Posts</h6>
+                <hr>
+                <div class="row">                       
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card mb-5">
+                            <div class="card-header p-0">                                   
+                                <div class="blog-media">
+                                    <img src="{% static 'blogapp/imgs/blog-2.jpg' %}" alt="" class="w-100">
+                                    <a href="#" class="badge badge-primary">#Placeat</a>        
+                                </div>  
+                            </div>
+                            <div class="card-body px-0">
+                                <h6 class="card-title mb-2"><a href="#" class="text-dark">Voluptates Corporis Placeat</a></h6>  
+                                <small class="small text-muted">January 20 2019 
+                                    <span class="px-2">-</span>
+                                    <a href="#" class="text-muted">34 Comments</a>
+                                </small>
+                            </div>                  
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card mb-5">
+                            <div class="card-header p-0">                                   
+                                <div class="blog-media">
+                                    <img src="{% static 'blogapp/imgs/blog-3.jpg' %}" alt="" class="w-100">
+                                    <a href="#" class="badge badge-primary">#dolores</a>        
+                                </div>  
+                            </div>
+                            <div class="card-body px-0">
+                                <h6 class="card-title mb-2"><a herf="#" class="text-dark">Dolorum Dolores Itaque</a></h6>   
+                                <small class="small text-muted">January 19 2019 
+                                    <span class="px-2">-</span>
+                                    <a href="#" class="text-muted">64 Comments</a>
+                                </small>
+                            </div>      
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4 d-none d-lg-block">
+                        <div class="card mb-5">
+                            <div class="card-header p-0">                                   
+                                <div class="blog-media">
+                                    <img src="{% static 'blogapp/imgs/blog-4.jpg' %}" alt="" class="w-100">
+                                    <a href="#" class="badge badge-primary">#amet</a>       
+                                </div>  
+                            </div>
+                            <div class="card-body px-0">
+                                <h6 class="card-title mb-2">Quisquam Dignissimos</h6>   
+                                <small class="small text-muted">January 17 2019 
+                                    <span class="px-2">-</span>
+                                    <a href="#" class="text-muted">93 Comments</a>
+                                </small>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sidebar -->
+            <div class="page-sidebar">
+                <h6 class=" ">Tags</h6>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#iusto</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#quibusdam</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#officia</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#animi</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#mollitia</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#quod</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#ipsa at</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#dolor</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#incidunt</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#possimus</a>
+    
+                <div class="ad-card d-flex text-center align-items-center justify-content-center mt-4">
+                    <span href="#" class="font-weight-bold">ADS</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="instagram-wrapper mt-5">
+        <div class="ig-id">
+            <a href="javascript:void(0)">Follow @joe_mitchell On Instagram</a>
+        </div>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="assets/imgs/insta-1.jpg" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-2.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-3.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-4.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-5.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-6.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-md-3 text-center text-md-left mb-3 mb-md-0">
+                    <img src="{% static 'blogapp/imgs/logo.svg' %}" alt="" class="logo">
+                </div>
+                <div class="col-md-9 text-center text-md-right">
+                    <div class="socials">
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-facebook pr-1"></i> 123,345</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-twitter pr-1"></i> 321,534</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-pinterest-alt pr-1"></i> 543,312</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-instagram pr-1"></i> 123,023</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-youtube pr-1"></i> 231,043</a>
+                    </div>
+                </div>  
+            </div>
+            <p class="border-top mb-0 mt-4 pt-3 small">&copy; <script>document.write(new Date().getFullYear())</script>, JoeBlog Created By <a href="https://www.devcrud.com" class="text-muted font-weight-bold" target="_blank">DevCrud.</a>  All rights reserved </p> 
+        </div>      
+    </footer>
+    <!-- End of Page Footer -->
+
+	<!-- core  -->
+    <script src="{% static 'blogapp/vendors/jquery/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'blogapp/vendors/bootstrap/bootstrap.bundle.js' %}"></script>
+
+    <!-- JoeBLog js -->
+    <script src="{% static 'blogapp/js/joeblog.js' %}"></script>
+    
+    <script>
+        var isCommentsShown = false;  // Initially, extra comments are hidden
+    
+        document.getElementById('loadMoreComments').addEventListener('click', function(event) {
+            event.preventDefault();
+            var comments = document.querySelectorAll('.comment');
+    
+            // Toggle visibility of comments and update the button text
+            if (!isCommentsShown) {
+                comments.forEach(function(comment, index) {
+                    if (index >= 3) {  // Assuming the first 5 comments are initially visible
+                        comment.classList.remove('hidden');
+                    }
+                });
+                this.textContent = 'Hide Comments';
+                isCommentsShown = true;
+            } else {
+                comments.forEach(function(comment, index) {
+                    if (index >= 3) {  // Re-hide comments beyond the first 5
+                        comment.classList.add('hidden');
+                    }
+                });
+                this.textContent = 'Show More Comments';
+                isCommentsShown = false;
+            }
+        });
+    </script>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+    
+        // Function to set the button text
+        function setButtonLabel() {
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.textContent = 'Light Mode';
+            } else {
+                themeToggle.textContent = 'Dark Mode';
+            }
+        }
+    
+        // Function to toggle the theme and button label
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            setButtonLabel();
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark-mode' : null);
+        }
+    
+        // Check and apply saved theme on page load
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            document.body.classList.add(currentTheme);
+        }
+    
+        // Set initial button label based on the theme
+        setButtonLabel();
+    
+        // Event listener for the toggle button
+        themeToggle.addEventListener('click', toggleTheme);
+    </script>
+    
+    
+    
+</body>
+</html>

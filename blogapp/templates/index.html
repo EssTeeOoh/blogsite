@@ -1,0 +1,469 @@
+{% load static %}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="#">
+    <meta name="author" content="Devcrud">
+    <title> Olu's Blog </title>
+    <!-- font icons -->
+    <link rel="stylesheet" href="{% static 'blogapp/vendors/themify-icons/css/themify-icons.css' %}">
+    <!-- Bootstrap + JoeBLog main styles -->
+	<link rel="stylesheet" href="{% static 'blogapp/css/joeblog.css' %}">
+</head>
+<body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+    
+    <!-- page First Navigation -->
+    
+    <!-- End Of First Navigation -->
+    
+    <!-- Page Second Navigation -->
+    <nav class="navbar custom-navbar navbar-expand-md navbar-light bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <img src="{% static 'blogapp/imgs/logo.svg' %}" alt="">
+            </a>
+            <h5 class="card-title">Olu's Blog</h5>
+            <button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">   
+                    
+                    {% if cat_menu %}
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Categories
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                            {% for item in cat_menu %}
+                            <a class="dropdown-item" href="{% url 'category' item %}">{{item}}</a>
+                            {% endfor %}
+
+                            
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Profile
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{% url 'edit_profile' %}">Edit Settings</a>
+
+                            {% if user.profile.id %}
+                            <a class="dropdown-item" href="{% url 'edit_profile_page' user.profile.id %}">Edit Profile Page</a>
+
+                            <a class="dropdown-item" href="{% url 'show_profile_page' user.profile.id %}">Show Profile Page</a>
+
+                            {% else %}
+                            <a class="dropdown-item" href="{% url 'create_profile_page' %}">Create Profile Page</a>
+
+                            {% endif %}
+                            
+                            
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_post' %}">Add Post</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_category' %}">Add Category</a>
+                    </li>
+
+                    
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout </a>
+                    </li>
+
+                    {% else %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Register</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login </a>
+                    </li>
+                    {% endif %}
+
+                   
+                </ul>
+                <div class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <button id="themeToggle" class="btn btn-dark mt-1 btn-sm">Dark Mode</button>
+                        </a>
+                    </li>
+                </div>
+                
+            </div>
+        </div>
+    </nav>
+    <!-- End Of Page Second Navigation -->
+    
+    <!-- page-header -->
+    <header class="page-header"></header>
+    <!-- end of page header -->
+
+
+    <div class="container">
+        <section>
+            <div class="feature-posts">
+                <a href="single-post.html" class="feature-post-item">                       
+                    <span>Featured Posts</span>
+                </a>
+                <a href="single-post.html" class="feature-post-item">
+                    <img src="{% static 'blogapp/imgs/img-1.jpg' %}" class="w-100" alt="">
+                    <div class="feature-post-caption">Incidunt Quaerat</div>
+                </a>
+                <a href="single-post.html" class="feature-post-item">
+                    <img src="{% static 'blogapp/imgs/img-2.jpg' %}" class="w-100" alt="">
+                    <div class="feature-post-caption">Culpa Ducimus</div>
+                </a>
+                <a href="single-post.html" class="feature-post-item">
+                    <img src="{% static 'blogapp/imgs/img-3.jpg' %}" class="w-100" alt="">
+                    <div class="feature-post-caption">Temporibus Simile</div>
+                </a>
+                <a href="single-post.html" class="feature-post-item">
+                    <img src="{% static 'blogapp/imgs/img-4.jpg' %}" class="w-100" alt="">
+                    <div class="feature-post-caption">Adipisicing</div>
+                </a>
+            </div>
+        </section>
+        <hr>
+
+            
+        <div class="page-container">
+            <div class="page-content">
+                
+                {% for post in object_list %}  
+                         
+                <div class="card {% if forloop.counter > 5 %}extra{% endif %}">
+                    <div class="card-header text-center">
+                        <h5 class="card-title">{{ post.title }}</h5> 
+                        <small class="small text-muted">{{post.post_date}} 
+                            <span class="px-2">-</span>
+                            <a href="#" class="text-muted">32 Comments</a>
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <div class="blog-media">
+                            {% if post.header_image %}
+                            <img src="{{post.header_image.url}}" alt="" class="w-100">
+                            {% endif %}
+                            <a href="{% url 'category' post.category %}" class="badge badge-primary">{{ post.category }}</a>     
+                        </div>  
+                        <p class="my-3">{{post.snippet}}</p>
+                    </div>
+                    
+                    <div class="card-footer d-flex justify-content-between align-items-center flex-basis-0">
+                        <a href="{% url 'category' post.category %}" class="text-dark small text-muted">{{ post.category }}</a>
+                        <a href="{% url 'single-post' post.pk %}" class="text-info">READ MORE</a>
+                        <a href="{% url 'show_profile_page' post.author.profile.id %}" class="text-dark small text-muted">By : {{ post.author }} </a>
+                    </div>      
+                    <hr>            
+                </div>
+                
+                   
+                {% endfor %}
+            
+                <button class="btn btn-primary btn-block my-4">Load More Posts</button>
+            </div>
+          
+
+            <!-- Sidebar -->
+            <div class="page-sidebar text-center">
+                <h6 class="sidebar-title section-title mb-4 mt-3">About</h6>
+                <a href="https://portfolio-4yfm.onrender.com/">
+                    <img src="{% static 'blogapp/imgs/olu.jpg' %}" alt="" class="circle-100 mb-3">
+                </a>
+                <div class="socials mb-3 mt-2">
+                    <a href="https://portfolio-4yfm.onrender.com/"><i class="ti-world"></i></a>
+                    <a href="https://web.facebook.com/toluwani.olugbesan"><i class="ti-facebook"></i></a>
+                    <a href="https://twitter.com/EssTeeOoh"><i class="ti-twitter"></i></a>
+                    <a href="https://www.instagram.com/samuelolugbesan/"><i class="ti-instagram"></i></a>
+                    
+                </div>
+                <p> I'm a passionate web developer and a fervent crypto enthusiast. When I'm not delving into the latest trends in blockchain technology, you can find me cheering for Chelsea FC. </p>
+                
+
+                <h6 class="sidebar-title mt-5 mb-4">Newsletter</h6>
+                <form action="">
+                    <div class="ml-embedded" data-form="o0czb4"></div>
+                </form>
+
+                <h6 class="sidebar-title mt-5 mb-4">Tags</h6>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#iusto</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#quibusdam</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#officia</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#animi</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#mollitia</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#quod</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#ipsa at</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#dolor</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#incidunt</a>
+                <a href="javascript:void(0)" class="badge badge-primary m-1">#possimus</a>
+
+                <h6 class="sidebar-title mt-5 mb-4">Instagram</h6>
+                <div class="row px-3">
+                    <div class="col-4 p-1 figure">
+                        <a href="#" class="figure-img">
+                            <img src="{% static 'blogapp/imgs/insta-1.jpg' %}" alt="">
+                        </a>
+                    </div>
+                    <div class="col-4 p-1 figure">
+                        <a href="#" class="figure-img">
+                            <img src="{% static 'blogapp/imgs/insta-2.jpg' %}" alt="" class="w-100 m-0">
+                        </a>
+                    </div>  
+                    <div class="col-4 p-1 figure">
+                        <a href="#" class="figure-img">
+                            <img src="{% static 'blogapp/imgs/insta-3.jpg' %}" alt="" class="w-100">
+                        </a>
+                    </div>
+                    <div class="col-4 p-1 figure">
+                        <a href="#" class="figure-img">
+                            <img src="{% static 'blogapp/imgs/insta-4.jpg' %}" alt="" class="w-100 m-0">
+                        </a>
+                    </div>  
+                    <div class="col-4 p-1 figure">
+                        <a href="#" class="figure-img">
+                            <img src="{% static 'blogapp/imgs/insta-5.jpg' %}" alt="" class="w-100">
+                        </a>
+                    </div>
+                    <div class="col-4 p-1 figure">
+                        <a href="#" class="figure-img">
+                            <img src="{% static 'blogapp/imgs/insta-6.jpg' %}" alt="" class="w-100 m-0">
+                        </a>
+                    </div>                          
+                </div>  
+
+                <figure class="figure mt-5">
+                    <a href="single-post.html" class="figure-img">
+                        <img src="{% static 'blogapp/imgs/img-4.jpg' %}" alt="" class="w-100">
+                        <figcaption class="figcaption">Laboriosam</figcaption>
+                    </a>
+                </figure>
+
+                <h6 class="sidebar-title mt-5 mb-4">Popular Posts</h6>
+                <div class="card mb-4">
+                    <a href="single-post.html" class="overlay-link"></a>
+                    <div class="card-header p-0">                                   
+                        <div class="blog-media">
+                            <img src="{% static 'blogapp/imgs/blog-6.jpg' %}" alt="" class="w-100">
+                            <a href="#" class="badge badge-primary">#Lorem</a>      
+                        </div>  
+                    </div>
+                    <div class="card-body px-0">
+                        <h5 class="card-title mb-2">Corporis Placeat</h5>   
+                        <small class="small text-muted"><i class="ti-calendar pr-1"></i> January 24 2019
+                        </small>
+                        <p class="my-2">consectetur adipisicing Cum veritatis minus iustorpo cupiditate voluptas ...</p>
+                    </div>      
+                </div>
+
+                <div class="media text-left mb-4">
+                    <a href="single-post.html" class="overlay-link"></a>
+                    <img class="mr-3" src="{% static 'blogapp/imgs/blog-1.jpg' %}" width="100px" alt="Generic placeholder image">
+                    <div class="media-body">
+                        <h6 class="mt-0">Nobis Mollitia</h6>
+                        <p class="mb-2"> deserunt quisqua...</p>
+                        <p class="text-muted small"><i class="ti-calendar pr-1"></i>  January 02 2019</p>
+                    </div>
+                </div>
+                <div class="media text-left mb-4">
+                    <a href="single-post.html" class="overlay-link"></a>
+                    <img class="mr-3" src="{% static 'blogapp/imgs/blog-2.jpg' %}" width="100px" alt="Generic placeholder image">
+                    <div class="media-body">
+                        <h6 class="mt-0">Officiis Laborum</6>
+                        <p class="mb-2"> deserunt quisqua...</p>                            
+                        <p class="text-muted small"><i class="ti-calendar pr-1"></i>  January 10 2019</p>
+                    </div>
+                </div>
+                <div class="media text-left mb-4">
+                    <a href="single-post.html" class="overlay-link"></a>
+                    <img class="mr-3" src="{% static 'blogapp/imgs/blog-3.jpg' %}" width="100px" alt="Generic placeholder image">
+                    <div class="media-body">
+                        <h6 class="mt-0">Sapiente fugit vero</h6>
+                        <p class="mb-2"> deserunt ard quisqua...</p>                        
+                        <p class="text-muted small"><i class="ti-calendar pr-1"></i>  January 04 2019</p>
+                    </div>
+                </div>  
+                <div class="ad-card d-flex text-center align-items-center justify-content-center">
+                    <span href="#" class="font-weight-bold">ADS</span>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="instagram-wrapper mt-5">
+        <div class="ig-id">
+            <a href="javascript:void(0)">Follow @joe_mitchell On Instagram</a>
+        </div>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-1.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-2.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-3.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-4.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-5.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+        <a href="javascript:void(0)" class="insta-item">
+            <img src="{% static 'blogapp/imgs/insta-6.jpg' %}" alt="" class="w-100">
+            <div class="overlay">
+                <span>
+                    <i class="ti-heart"></i> 23
+                </span>
+                <span>
+                    <i class="ti-comment"></i> 12
+                </span>
+            </div>
+        </a>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-md-3 text-center text-md-left mb-3 mb-md-0">
+                    <img src="{% static 'blogapp/imgs/logo.svg' %}" alt="" class="logo">
+                </div>
+                <div class="col-md-9 text-center text-md-right">
+                    <div class="socials">
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-facebook pr-1"></i> 123,345</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-twitter pr-1"></i> 321,534</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-pinterest-alt pr-1"></i> 543,312</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-instagram pr-1"></i> 123,023</a>
+                        <a href="javascript:void(0)" class="font-weight-bold text-muted mr-4"><i class="ti-youtube pr-1"></i> 231,043</a>
+                    </div>
+                </div>  
+            </div>
+            <p class="border-top mb-0 mt-4 pt-3 small">&copy; <script>document.write(new Date().getFullYear())</script>, JoeBlog Created By <a href="https://www.devcrud.com" class="text-muted font-weight-bold" target="_blank">DevCrud.</a>  All rights reserved </p> 
+        </div>      
+    </footer>
+    <!-- End of Page Footer -->
+
+	<!-- core  -->
+    <script src="{% static 'blogapp/vendors/jquery/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'blogapp/vendors/bootstrap/bootstrap.bundle.js' %}"></script>
+
+    <!-- JoeBLog js -->
+    <script src="{% static 'blogapp/js/joeblog.js' %}"></script>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+    
+        // Function to set the button text
+        function setButtonLabel() {
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.textContent = 'Light Mode';
+            } else {
+                themeToggle.textContent = 'Dark Mode';
+            }
+        }
+    
+        // Function to toggle the theme and button label
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            setButtonLabel();
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark-mode' : null);
+        }
+    
+        // Check and apply saved theme on page load
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            document.body.classList.add(currentTheme);
+        }
+    
+        // Set initial button label based on the theme
+        setButtonLabel();
+    
+        // Event listener for the toggle button
+        themeToggle.addEventListener('click', toggleTheme);
+    </script>
+    <script>
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            const extraPosts = document.querySelectorAll('.extra');
+            const isHidden = extraPosts[0].style.display === 'none' || extraPosts[0].style.display === '';
+        
+            extraPosts.forEach(post => {
+                post.style.display = isHidden ? 'block' : 'none';
+            });
+        
+            this.textContent = isHidden ? 'Hide Posts' : 'Load More Posts';
+        });
+        
+    </script>
+    <!-- MailerLite Universal -->
+    <script>
+        (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
+        .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
+        n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
+        (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+        ml('account', '744263');
+    </script>
+<!-- End MailerLite Universal -->
+
+</body>
+
+</html>
